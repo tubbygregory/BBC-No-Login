@@ -86,6 +86,7 @@ def build(output_dir, tag=None):
         for path in sorted(files):
             name = path.relative_to(ROOT).as_posix()
             info = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.create_system = 3
             info.compress_type = ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             archive.writestr(info, path.read_bytes())
