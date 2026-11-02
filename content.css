@@ -1,29 +1,117 @@
-/* !important keeps the injected control usable alongside BBC's button resets. */
+/* Scope every rule to the extension's own elements, including reset overrides. */
 [data-bbc-no-login-never] {
-  display: inline-block !important;
+  appearance: none !important;
+  display: inline-flex !important;
   position: relative !important;
+  align-items: center !important;
+  justify-content: center !important;
   visibility: visible !important;
-  margin: 0.5rem !important;
-  padding: 0.65rem 1rem !important;
-  border: 2px solid #202224 !important;
-  border-radius: 4px !important;
-  background: #fff !important;
-  color: #202224 !important;
-  font: 600 1rem/1.25 system-ui, sans-serif !important;
+  vertical-align: middle !important;
+  min-height: 42px !important;
+  margin: 6px 8px !important;
+  padding: 10px 18px !important;
+  border: 1px solid #3448b5 !important;
+  border-radius: 7px !important;
+  background: #3448b5 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 2px #17203314 !important;
+  font: 600 15px/1.3 system-ui, sans-serif !important;
+  letter-spacing: 0 !important;
   text-align: center !important;
+  text-decoration: none !important;
+  text-transform: none !important;
   cursor: pointer !important;
 }
 
-[data-bbc-no-login-never]:hover {
-  background: #eee !important;
+[data-bbc-no-login-never]:hover { background: #293a9c !important; }
+[data-bbc-no-login-never]:active { background: #213080 !important; }
+[data-bbc-no-login-never]:disabled { opacity: 0.65 !important; cursor: wait !important; }
+
+[data-bbc-no-login-error] {
+  display: block !important;
+  margin: 4px 8px !important;
+  color: #a52128 !important;
+  font: 500 13px/1.5 system-ui, sans-serif !important;
 }
 
-[data-bbc-no-login-never]:focus-visible {
-  outline: 3px solid #005fcc !important;
-  outline-offset: 3px !important;
+[data-bbc-no-login-notice] {
+  all: initial !important;
+  position: fixed !important;
+  inset: auto 20px 20px auto !important;
+  z-index: 2147483647 !important;
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) 28px !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+  width: min(400px, calc(100vw - 32px)) !important;
+  padding: 20px !important;
+  border: 1px solid #dfe4ef !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  color: #172033 !important;
+  box-shadow: 0 8px 32px #17203324 !important;
+  font: 400 14px/1.5 system-ui, sans-serif !important;
+  color-scheme: light !important;
+  text-align: left !important;
+  direction: ltr !important;
+  isolation: isolate !important;
 }
 
-[data-bbc-no-login-never]:disabled {
-  opacity: 0.6 !important;
-  cursor: wait !important;
+[data-bbc-no-login-notice] div { all: initial !important; display: block !important; font: inherit !important; }
+[data-bbc-no-login-mark] {
+  display: grid !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: #edf7f1 !important;
+  color: #206443 !important;
+  font: 700 16px/1 system-ui, sans-serif !important;
+}
+[data-bbc-no-login-title], [data-bbc-no-login-copy] {
+  all: initial !important;
+  display: block !important;
+  margin: 0 !important;
+  font: 600 14px/1.5 system-ui, sans-serif !important;
+  color: #172033 !important;
+}
+[data-bbc-no-login-copy] { margin-top: 4px !important; font-weight: 400 !important; color: #596579 !important; }
+[data-bbc-no-login-undo], [data-bbc-no-login-close] {
+  all: initial !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 30px !important;
+  padding: 3px 6px !important;
+  border-radius: 4px !important;
+  color: #3448b5 !important;
+  font: 600 13px/1.4 system-ui, sans-serif !important;
+  cursor: pointer !important;
+}
+[data-bbc-no-login-undo] { margin: 8px 0 -4px -6px !important; }
+[data-bbc-no-login-close] { align-self: start !important; width: 28px !important; min-height: 28px !important; color: #596579 !important; font-size: 22px !important; }
+[data-bbc-no-login-undo]:hover, [data-bbc-no-login-close]:hover { background: #f0f2fa !important; }
+[data-bbc-no-login-undo]:disabled { cursor: default !important; opacity: 0.65 !important; }
+[data-bbc-no-login-never]:focus-visible,
+[data-bbc-no-login-undo]:focus-visible,
+[data-bbc-no-login-close]:focus-visible { outline: 3px solid #5c75ef !important; outline-offset: 3px !important; }
+
+@media (prefers-color-scheme: dark) {
+  [data-bbc-no-login-notice] { background: #1d2534 !important; border-color: #3b465b !important; color-scheme: dark !important; }
+  [data-bbc-no-login-title] { color: #f2f4fa !important; }
+  [data-bbc-no-login-copy], [data-bbc-no-login-close] { color: #b2bed2 !important; }
+  [data-bbc-no-login-mark] { background: #203f34 !important; color: #a0dcc0 !important; }
+  [data-bbc-no-login-undo] { color: #b1bfff !important; }
+  [data-bbc-no-login-undo]:hover, [data-bbc-no-login-close]:hover { background: #303c52 !important; }
+  [data-bbc-no-login-error] { color: #ffb4b8 !important; }
+}
+
+@media (max-width: 480px) {
+  [data-bbc-no-login-notice] { inset: auto 16px 16px 16px !important; padding: 16px !important; }
+}
+
+@media (forced-colors: active) {
+  [data-bbc-no-login-never] { forced-color-adjust: auto !important; border: 1px solid ButtonText !important; }
+  [data-bbc-no-login-notice] { border: 1px solid CanvasText !important; }
 }

@@ -7,19 +7,54 @@
     <link rel="stylesheet" href="popup.css">
     <script src="popup.js" defer></script>
   </head>
-  <body>
-    <header>
-      <img src="icons/icon48.png" width="40" height="40" alt="">
-      <h1>BBC No Login</h1>
+  <body data-state="loading">
+    <header class="brand">
+      <img src="icons/icon48.png" width="36" height="36" alt="">
+      <div>
+        <h1>BBC No Login</h1>
+        <p class="brand-caption">Your choice, remembered.</p>
+      </div>
     </header>
-    <p>Your choice, remembered across BBC websites in this browser profile.</p>
-    <label class="preference">
-      <input id="never-reminders" type="checkbox" disabled>
-      <span>Never ask me to sign in</span>
-    </label>
-    <p id="status" role="status" aria-live="polite">Loading your preference…</p>
-    <button id="allow-reminders" type="button" disabled>Allow reminders again</button>
-    <p class="note">Optional reminders only. Services that require an account, such as iPlayer, still require one.</p>
-    <footer>Independent extension. Not affiliated with the BBC.</footer>
+
+    <main>
+      <section class="preference-card" aria-labelledby="state-title" aria-busy="true">
+        <div class="card-heading">
+          <p class="eyebrow">SIGN-IN REMINDERS</p>
+          <span class="state-badge"><span class="state-dot" aria-hidden="true"></span><span id="state-label">Checking</span></span>
+        </div>
+        <h2 id="state-title">Checking your preference</h2>
+        <p id="status" role="status" aria-live="polite" aria-atomic="true">One moment while we load your saved choice.</p>
+
+        <label class="preference" for="never-reminders">
+          <span class="preference-copy">
+            <span id="preference-label">Never ask me to sign in</span>
+            <span id="preference-hint">Across BBC websites in this profile</span>
+          </span>
+          <input id="never-reminders" type="checkbox" role="switch" aria-labelledby="preference-label" aria-describedby="preference-hint" disabled>
+        </label>
+
+        <button id="allow-reminders" type="button" class="reset-button" disabled>Allow reminders again</button>
+        <button id="retry-preference" type="button" class="retry-button" hidden>Try again</button>
+      </section>
+
+      <div class="privacy-line">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+        <span>Saved on this device. No tracking.</span>
+      </div>
+
+      <aside class="scope-note" aria-label="What this applies to">
+        <p>Optional reminders only.</p>
+        <p>Services that require an account, including iPlayer, still require one.</p>
+      </aside>
+    </main>
+
+    <footer>
+      <nav aria-label="Support">
+        <a href="https://github.com/tubbygregory/BBC-No-Login/blob/main/docs/INSTALL.md" target="_blank" rel="noopener noreferrer">Help</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://github.com/tubbygregory/BBC-No-Login/issues/new" target="_blank" rel="noopener noreferrer">Report a problem</a>
+      </nav>
+      <p>Independent extension. Not affiliated with the BBC.</p>
+    </footer>
   </body>
 </html>

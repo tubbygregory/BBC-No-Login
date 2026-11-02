@@ -1,6 +1,6 @@
 # BBC No Login privacy policy
 
-BBC No Login remembers whether you want optional BBC sign-in reminders dismissed. This policy describes version 1.0.0.
+BBC No Login remembers whether you want optional BBC sign-in reminders dismissed. This policy describes version 1.1.0.
 
 ## Data stored
 

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>Get started · BBC No Login</title>
+    <link rel="icon" href="icons/icon48.png">
+    <link rel="stylesheet" href="guide.css">
+    <script src="guide.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a class="brand" href="https://github.com/tubbygregory/BBC-No-Login" target="_blank" rel="noopener noreferrer">
+          <img src="icons/icon48.png" width="40" height="40" alt="">
+          <span>BBC No Login<span class="brand-caption">Your choice, remembered.</span></span>
+        </a>
+        <a class="header-link" href="https://github.com/tubbygregory/BBC-No-Login/blob/main/docs/INSTALL.md" target="_blank" rel="noopener noreferrer">Need a hand? <svg class="external-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8"></path></svg></a>
+      </header>
+
+      <main>
+        <div class="intro">
+          <p class="eyebrow">GET STARTED</p>
+          <h1>A quieter BBC.<br>Your choice, remembered.</h1>
+          <p class="intro-copy">Add <strong>Never</strong> to optional sign-in reminders. Follow these steps to install BBC No Login in your desktop browser.</p>
+        </div>
+
+        <div class="layout">
+          <section class="steps" aria-label="Installation steps">
+            <section class="step" aria-labelledby="step-one">
+              <span class="step-number" aria-hidden="true">1</span>
+              <div class="step-content">
+                <p class="step-caption">KEEP IT SOMEWHERE SAFE</p>
+                <h2 id="step-one">Choose a home for this folder</h2>
+                <p>Move the extracted folder somewhere permanent, such as your Documents folder. Keep all the files together, including this guide and <code>manifest.json</code>.</p>
+                <p class="hint">Your browser will load the extension from this folder, so keep it after installation.</p>
+              </div>
+            </section>
+
+            <section class="step" aria-labelledby="step-two">
+              <span class="step-number" aria-hidden="true">2</span>
+              <div class="step-content">
+                <p class="step-caption">OPEN YOUR EXTENSIONS</p>
+                <h2 id="step-two">Choose your browser</h2>
+                <fieldset class="browser-picker">
+                  <legend class="visually-hidden">Your browser</legend>
+                  <label><input type="radio" name="browser" value="chrome" checked><span>Chrome</span></label>
+                  <label><input type="radio" name="browser" value="edge"><span>Microsoft Edge</span></label>
+                  <label><input type="radio" name="browser" value="brave"><span>Brave</span></label>
+                </fieldset>
+                <p>Copy this address and paste it into your browser’s address bar.</p>
+                <div class="address-row">
+                  <input id="extensions-address" type="text" value="chrome://extensions" readonly aria-label="Extensions page address" spellcheck="false">
+                  <button id="copy-address" type="button">Copy address</button>
+                </div>
+                <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+                <noscript><p class="hint">For Edge, use <code>edge://extensions</code>. For Brave, use <code>brave://extensions</code>.</p></noscript>
+              </div>
+            </section>
+
+            <section class="step" aria-labelledby="step-three">
+              <span class="step-number" aria-hidden="true">3</span>
+              <div class="step-content">
+                <p class="step-caption">ADD THE EXTENSION</p>
+                <h2 id="step-three">Enable Developer mode</h2>
+                <p id="developer-mode-hint">Developer mode is in the top-right corner.</p>
+                <p>Turn it on, choose <strong>Load unpacked</strong>, then select the folder containing this guide and <code>manifest.json</code>.</p>
+                <div class="callout"><strong>Select the folder, not the ZIP.</strong><span>BBC No Login should now appear in your extensions list. Make sure it is enabled.</span></div>
+              </div>
+            </section>
+
+            <section class="step" aria-labelledby="step-four">
+              <span class="step-number" aria-hidden="true">4</span>
+              <div class="step-content">
+                <p class="step-caption">MAKE IT YOURS</p>
+                <h2 id="step-four">Reload your BBC tabs</h2>
+                <p>When a supported sign-in reminder appears, choose <strong>Never</strong>. Your choice is saved across BBC websites in this browser profile.</p>
+                <p>To enable it straight away, open <strong>BBC No Login</strong> from your browser’s extensions menu and turn on <strong>Never ask me to sign in</strong>.</p>
+                <p class="hint">You can change your mind at any time from the same menu. Pin the extension to your toolbar for easier access.</p>
+              </div>
+            </section>
+          </section>
+
+          <aside class="sidebar" aria-label="What to expect">
+            <div class="preview-card">
+              <p class="eyebrow">ONE MORE OPTION. YOURS.</p>
+              <h2>A choice that stays chosen.</h2>
+              <p class="preview-intro">Optional reminders get a new answer.</p>
+              <figure class="reminder-preview">
+                <div class="example-reminder">
+                  <span class="example-label">EXAMPLE REMINDER</span>
+                  <p class="example-title">Sign in to get more from the BBC</p>
+                  <p class="example-copy">Enjoy a more personal experience with your account.</p>
+                  <div class="example-actions" aria-label="Example reminder options">
+                    <span class="example-later">Maybe later</span>
+                    <span class="example-never">Never <span aria-hidden="true">✓</span></span>
+                  </div>
+                </div>
+                <figcaption>Illustrative example. BBC layouts may vary.</figcaption>
+              </figure>
+              <ul class="benefits">
+                <li><span aria-hidden="true">✓</span> Your preference stays in this browser</li>
+                <li><span aria-hidden="true">✓</span> No account or tracking</li>
+                <li><span aria-hidden="true">✓</span> Easy to change your mind</li>
+              </ul>
+            </div>
+
+            <div class="details-card">
+              <h3>A little clarity</h3>
+              <p>This extension handles optional, English-language sign-in reminders on BBC websites. Services that require an account, including iPlayer, still require one.</p>
+              <p>It needs access to BBC pages to add <strong>Never</strong>, and local storage to remember your choice.</p>
+              <a href="https://github.com/tubbygregory/BBC-No-Login/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Read the privacy policy <svg class="external-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8"></path></svg></a>
+            </div>
+
+            <p class="managed-note">Work or school browser? Your administrator may control whether you can load extensions this way.</p>
+          </aside>
+        </div>
+
+        <section class="aftercare" aria-label="Keeping things simple">
+          <div><h2>Change your mind</h2><p>Open BBC No Login and choose <strong>Allow reminders again</strong>. Future reminders can appear; the one you dismissed stays closed.</p></div>
+          <div><h2>Keep it up to date</h2><p>GitHub installs do not update automatically. Replace the files in the same folder, then choose <strong>Reload</strong> on your extensions page.</p></div>
+          <div><h2>Need a hand?</h2><p>Our <a href="https://github.com/tubbygregory/BBC-No-Login/blob/main/docs/INSTALL.md" target="_blank" rel="noopener noreferrer">installation guide</a> covers common questions, updates, and removing the extension.</p></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Independent extension. Not affiliated with or endorsed by the BBC.</p>
+        <a href="https://github.com/tubbygregory/BBC-No-Login" target="_blank" rel="noopener noreferrer">View on GitHub <svg class="external-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8"></path></svg></a>
+      </footer>
+    </div>
+  </body>
+</html>

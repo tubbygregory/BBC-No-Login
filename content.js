@@ -12,6 +12,112 @@
   let never = false;
   let preferenceRevision = 0;
   let scheduled = false;
+  let notice = null;
+
+  function removeNotice() {
+    if (!notice) return;
+    clearTimeout(notice.timer);
+    notice.root.remove();
+    notice = null;
+  }
+
+  function showSavedNotice(restoreKeyboardFocus = false) {
+    removeNotice();
+    const root = document.createElement("aside");
+    root.dataset.bbcNoLoginNotice = "";
+    root.setAttribute("aria-label", "BBC No Login");
+    root.setAttribute("popover", "manual");
+
+    const mark = document.createElement("span");
+    mark.dataset.bbcNoLoginMark = "";
+    mark.setAttribute("aria-hidden", "true");
+    mark.textContent = "✓";
+
+    const content = document.createElement("div");
+    const title = document.createElement("p");
+    title.dataset.bbcNoLoginTitle = "";
+    title.setAttribute("role", "status");
+    title.setAttribute("aria-live", "polite");
+    title.textContent = "Your choice is remembered";
+    const copy = document.createElement("p");
+    copy.dataset.bbcNoLoginCopy = "";
+    copy.textContent = "Optional BBC sign-in reminders will be dismissed automatically.";
+    const undo = document.createElement("button");
+    undo.type = "button";
+    undo.dataset.bbcNoLoginUndo = "";
+    undo.textContent = "Undo";
+    content.append(title, copy, undo);
+
+    const close = document.createElement("button");
+    close.type = "button";
+    close.dataset.bbcNoLoginClose = "";
+    close.setAttribute("aria-label", "Dismiss confirmation");
+    close.textContent = "×";
+    root.append(mark, content, close);
+
+    const state = { root, timer: null, pending: false, undone: false };
+    notice = state;
+    const renderUndone = () => {
+      state.undone = true;
+      title.textContent = "Reminders allowed again";
+      copy.textContent = "Future reminders can appear. The one you dismissed will stay closed.";
+      undo.textContent = "Undone";
+      undo.disabled = true;
+    };
+    const expire = () => {
+      // Never remove an action while someone is reading or using it.
+      if (state.pending || root.contains(document.activeElement) || root.matches(":hover")) {
+        state.timer = setTimeout(expire, 5000);
+      } else if (notice === state) removeNotice();
+    };
+    state.timer = setTimeout(expire, 12000);
+    close.addEventListener("click", removeNotice);
+    undo.addEventListener("click", () => {
+      if (state.pending) return;
+      state.pending = true;
+      undo.disabled = true;
+      undo.textContent = "Saving…";
+      const writeRevision = preferenceRevision;
+      chrome.storage.local.set({ [PREFERENCE]: false }, () => {
+        state.pending = false;
+        const error = chrome.runtime.lastError;
+        if (notice !== state) return;
+        if (error) {
+          if (preferenceRevision !== writeRevision && !never) {
+            renderUndone();
+            return;
+          }
+          title.textContent = "Your choice is still saved";
+          copy.textContent = "Could not undo your choice. Please try again.";
+          undo.disabled = false;
+          undo.textContent = "Try undo again";
+          return;
+        }
+        if (preferenceRevision !== writeRevision && never) {
+          undo.disabled = false;
+          undo.textContent = "Undo";
+          return;
+        }
+        never = false;
+        preferenceRevision++;
+        // Keep the focused control in place while presenting the result.
+        renderUndone();
+        scheduleScan();
+      });
+    });
+
+    (document.body || document.documentElement).append(root);
+    // The top layer keeps feedback above a site's overlays without taking focus.
+    // Fallback styling works in Chromium versions without the Popover API.
+    if (typeof root.showPopover === "function") {
+      try { root.showPopover(); } catch { /* The document may be navigating. */ }
+    }
+    // If the site's handler leaves keyboard focus on the document after closing
+    // the reminder, make Undo reachable without tabbing through the whole page.
+    if (restoreKeyboardFocus && [document.body, document.documentElement].includes(document.activeElement)) {
+      undo.focus({ preventScroll: true });
+    }
+  }
 
   const normalize = (text) => (text || "").replace(/\s+/g, " ").trim();
   const label = (control) => normalize(control.textContent) ||
@@ -91,28 +197,47 @@
     }
   }
 
-  function chooseNever(entry) {
+  function chooseNever(entry, keyboardInitiated = false) {
     if (!ready || entry.pending) return;
     entry.pending = true;
     entry.button.disabled = true;
+    entry.button.textContent = "Saving…";
+    entry.error?.remove();
     const writeRevision = preferenceRevision;
 
     chrome.storage.local.set({ [PREFERENCE]: true }, () => {
       entry.pending = false;
       if (chrome.runtime.lastError) {
+        if (preferenceRevision !== writeRevision) {
+          entry.button.textContent = "Never";
+          scheduleScan();
+          return;
+        }
         entry.button.disabled = false;
-        entry.button.textContent = "Never (try again)";
+        entry.button.textContent = "Never — try again";
         entry.button.title = "Your choice could not be saved. Click to try again.";
+        if (!entry.error) {
+          entry.error = document.createElement("span");
+          entry.error.dataset.bbcNoLoginError = "";
+          entry.error.setAttribute("role", "alert");
+          entry.error.textContent = "Could not save your choice. Please try again.";
+        }
+        entry.button.after(entry.error);
+        if (keyboardInitiated && [document.body, document.documentElement].includes(document.activeElement)) {
+          entry.button.focus({ preventScroll: true });
+        }
         return;
       }
       // A reset in another tab can arrive before this write's callback.
       if (preferenceRevision !== writeRevision && !never) {
+        entry.button.textContent = "Never";
         scheduleScan();
         return;
       }
       never = true;
       preferenceRevision++;
       dismiss(entry);
+      showSavedNotice(keyboardInitiated);
       scheduleScan();
     });
   }
@@ -122,13 +247,13 @@
     button.type = "button";
     button.textContent = "Never";
     button.dataset.bbcNoLoginNever = "";
-    button.title = "Don't ask me to sign in on BBC websites again";
+    button.title = "Remember my choice on BBC websites · BBC No Login";
     button.disabled = !ready;
     const entry = { control, reminder, button, dismissed: false, pending: false, generation: 0 };
     button.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      chooseNever(entry);
+      chooseNever(entry, event.detail === 0);
     });
     entries.set(control, entry);
     return entry;
@@ -139,6 +264,7 @@
     for (const [control, entry] of entries) {
       if (!control.isConnected || !reminderFor(control)) {
         entry.button.remove();
+        entry.error?.remove();
         entries.delete(control);
       }
     }
@@ -170,6 +296,7 @@
     preferenceRevision++;
     never = changes[PREFERENCE].newValue === true;
     ready = true;
+    if (notice && ((never && notice.undone) || (!never && !notice.pending && !notice.undone))) removeNotice();
     if (!never) {
       for (const entry of entries.values()) {
         entry.dismissed = false;

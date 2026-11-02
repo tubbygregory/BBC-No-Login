@@ -2,6 +2,7 @@
 """Build a reproducible, unpacked-extension ZIP using only Python's standard library."""
 
 import argparse
+from hashlib import sha256
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -52,7 +53,7 @@ def build(output_dir, tag=None):
     if tag is not None and tag != f"v{version}":
         raise ValueError(f"Release tag must equal v{version}; got {tag!r}")
 
-    references = ["manifest.json", *icon_paths(manifest.get("icons", {}))]
+    references = ["manifest.json", "START-HERE.html", *icon_paths(manifest.get("icons", {}))]
     for action_name in ("action", "browser_action", "page_action"):
         action = manifest.get(action_name, {})
         if action.get("default_popup"):
@@ -94,6 +95,8 @@ def build(output_dir, tag=None):
     with ZipFile(output) as archive:
         if archive.testzip() is not None or "manifest.json" not in archive.namelist():
             raise ValueError("Extension archive validation failed")
+    checksum = output_dir / "SHA256SUMS.txt"
+    checksum.write_text(f"{sha256(output.read_bytes()).hexdigest()}  {output.name}\n")
     print(f"Created {output.relative_to(ROOT) if output.is_relative_to(ROOT) else output}: {len(files)} files, {output.stat().st_size:,} bytes")
     return output
 

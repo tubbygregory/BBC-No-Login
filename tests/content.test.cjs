@@ -134,6 +134,119 @@ test('Never persists the choice, uses native dismissal, and dismisses later remi
   } finally { await page.close(); }
 });
 
+test('Never confirms the saved choice and Undo allows future reminders again', async () => {
+  const page = await pageWith(reminder());
+  try {
+    await waitForNever(page);
+    await page.locator(neverSelector).click();
+    const notice = page.locator('[data-bbc-no-login-notice]');
+    await notice.waitFor();
+    assert.equal(await page.evaluate(() => window.savedPreference()), true);
+    assert.equal(await page.locator('.reminder').count(), 0);
+    await page.locator('[data-bbc-no-login-undo]').click();
+    assert.equal(await page.evaluate(() => window.savedPreference()), false);
+    await page.evaluate(html => document.body.insertAdjacentHTML('beforeend', html), reminder());
+    await waitForNever(page);
+    assert.equal(await page.evaluate(() => window.nativeDismissals), 1);
+    assert.equal(await page.locator('.reminder').isVisible(), true);
+  } finally { await page.close(); }
+});
+
+test('a keyboard Never choice moves focus to Undo when the native dismissal leaves the page unfocused', async () => {
+  const page = await pageWith(reminder());
+  try {
+    await waitForNever(page);
+    await page.locator(neverSelector).focus();
+    await page.keyboard.press('Enter');
+    await page.locator('[data-bbc-no-login-notice]').waitFor();
+    assert.equal(await page.locator('[data-bbc-no-login-undo]').evaluate(button => document.activeElement === button), true);
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(() => window.savedPreference()), false);
+  } finally { await page.close(); }
+});
+
+test('a keyboard Never choice preserves focus restored by the native site handler', async () => {
+  const page = await pageWith(`<button id="resume-reading">Resume reading</button>${reminder()}`);
+  try {
+    await page.evaluate(() => {
+      document.addEventListener('click', event => {
+        if (event.target.matches('[data-native-dismiss]')) document.querySelector('#resume-reading').focus();
+      });
+    });
+    await waitForNever(page);
+    await page.locator(neverSelector).focus();
+    await page.keyboard.press('Enter');
+    await page.locator('[data-bbc-no-login-notice]').waitFor();
+    assert.equal(await page.locator('#resume-reading').evaluate(button => document.activeElement === button), true);
+    assert.equal(await page.evaluate(() => window.savedPreference()), true);
+  } finally { await page.close(); }
+});
+
+test('a failed keyboard Never choice returns focus to the retry control', async () => {
+  const page = await pageWith(reminder(), { failWrites: true });
+  try {
+    await waitForNever(page);
+    await page.locator(neverSelector).focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await page.locator(neverSelector).evaluate(button => document.activeElement === button), true);
+    assert.equal(await page.locator('[data-bbc-no-login-error]').isVisible(), true);
+    assert.equal(await page.evaluate(() => window.savedPreference()), false);
+  } finally { await page.close(); }
+});
+
+test('Undo reports a failed write without losing the saved choice and can be retried', async () => {
+  const page = await pageWith(reminder());
+  try {
+    await waitForNever(page);
+    await page.locator(neverSelector).click();
+    await page.locator('[data-bbc-no-login-notice]').waitFor();
+    await page.evaluate(() => { window.failWrites = true; });
+    await page.locator('[data-bbc-no-login-undo]').click();
+    assert.equal(await page.evaluate(() => window.savedPreference()), true);
+    assert.match(await page.locator('[data-bbc-no-login-notice]').innerText(), /could not|try again|unable/i);
+    assert.equal(await page.locator('[data-bbc-no-login-undo]').isEnabled(), true);
+    await page.evaluate(() => { window.failWrites = false; });
+    await page.locator('[data-bbc-no-login-undo]').click();
+    assert.equal(await page.evaluate(() => window.savedPreference()), false);
+  } finally { await page.close(); }
+});
+
+test('a stale failed Undo respects a newer reset from another extension view', async () => {
+  const page = await pageWith(reminder());
+  try {
+    await waitForNever(page);
+    await page.locator(neverSelector).click();
+    await page.locator('[data-bbc-no-login-notice]').waitFor();
+    await page.evaluate(() => {
+      window.originalPreferenceWrite = chrome.storage.local.set;
+      chrome.storage.local.set = (_values, callback) => {
+        window.failPendingUndo = () => {
+          chrome.runtime.lastError = { message: 'Test delayed Undo write failure' };
+          callback();
+          chrome.runtime.lastError = undefined;
+        };
+      };
+    });
+    await page.locator('[data-bbc-no-login-undo]').click();
+    await page.evaluate(() => {
+      window.originalPreferenceWrite({ neverAskToSignIn: false }, () => {});
+      window.failPendingUndo();
+    });
+    assert.equal(await page.evaluate(() => window.savedPreference()), false);
+    assert.match(await page.locator('[data-bbc-no-login-notice]').innerText(), /reminders allowed again/i);
+    assert.doesNotMatch(await page.locator('[data-bbc-no-login-notice]').innerText(), /could not undo/i);
+  } finally { await page.close(); }
+});
+
+test('automatic reminder dismissal stays quiet without showing a saved-choice notice', async () => {
+  const page = await pageWith(reminder(), { preference: true });
+  try {
+    await page.waitForFunction(() => window.nativeDismissals === 1);
+    assert.equal(await page.locator('[data-bbc-no-login-notice]').count(), 0);
+    assert.equal(await page.locator('#article').isVisible(), true);
+  } finally { await page.close(); }
+});
+
 for (const [label, control] of [
   ['Not now link', '<a href="#" data-native-dismiss>Not now</a>'],
   ['No thanks input', '<input type="button" data-native-dismiss value="No thanks">'],
@@ -273,6 +386,8 @@ test('a failed preference write leaves the reminder available and can be retried
     assert.equal(await page.evaluate(() => window.nativeDismissals), 0);
     assert.equal(await page.locator('.reminder').isVisible(), true);
     assert.equal(await page.locator(neverSelector).isEnabled(), true);
+    assert.equal(await page.locator('[data-bbc-no-login-error]').isVisible(), true);
+    assert.equal(await page.locator('[data-bbc-no-login-notice]').count(), 0);
     await page.evaluate(() => { window.failWrites = false; });
     await page.locator(neverSelector).click();
     await page.waitForFunction(() => window.nativeDismissals === 1);

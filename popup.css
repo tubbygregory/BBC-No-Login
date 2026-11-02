@@ -1,26 +1,101 @@
 :root {
   color-scheme: light dark;
-  font: 14px/1.5 system-ui, sans-serif;
-  color: #202224;
-  background: #fff;
+  --canvas: #f8f9fc;
+  --surface: #ffffff;
+  --ink: #172033;
+  --muted: #586478;
+  --border: #e1e5ee;
+  --primary: #3448b5;
+  --primary-hover: #283c9e;
+  --active: #25724b;
+  --active-surface: #eaf5ee;
+  --neutral-surface: #eef0f6;
+  --track: #8791a4;
+  --error: #a53432;
+  --error-surface: #fff1ef;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
 }
 
-body { width: 300px; margin: 0; padding: 20px; }
-header { display: flex; align-items: center; gap: 12px; }
-h1 { font-size: 20px; margin: 0; }
-p { margin: 16px 0; }
-.preference { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
-input { width: 20px; height: 20px; accent-color: #3448b5; flex-shrink: 0; }
-#status { min-height: 42px; }
-button { font: inherit; padding: 8px 12px; border: 1px solid #65676a; border-radius: 4px; background: #f3f3f5; color: #202224; cursor: pointer; }
+* { box-sizing: border-box; }
+body { width: 360px; margin: 0; padding: 20px; }
+h1, h2, p { margin: 0; }
+button, input { font: inherit; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.brand img { flex: 0 0 auto; border-radius: 9px; }
+h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.25px; }
+.brand-caption { margin-top: 1px; font-size: 12px; color: var(--muted); }
+
+.preference-card { padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: 0 2px 8px rgb(23 32 51 / 3%); }
+.card-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+.eyebrow { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.state-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 6px; background: var(--neutral-surface); color: var(--muted); font-size: 10px; font-weight: 650; white-space: nowrap; }
+.state-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+h2 { font-size: 22px; font-weight: 700; line-height: 1.2; letter-spacing: -0.6px; }
+#status { min-height: 63px; margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+.preference { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 16px; margin-top: 16px; border-top: 1px solid var(--border); cursor: pointer; }
+.preference-copy { min-width: 0; }
+#preference-label { display: block; font-size: 12px; font-weight: 650; }
+#preference-hint { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+#never-reminders { appearance: none; position: relative; flex: 0 0 auto; width: 38px; height: 22px; margin: 0; border: 1px solid var(--track); border-radius: 20px; background: var(--track); cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
+#never-reminders::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 15%); transition: transform 150ms ease; }
+#never-reminders:checked { background: var(--primary); border-color: var(--primary); }
+#never-reminders:checked::after { transform: translateX(16px); }
+#never-reminders:disabled { opacity: 0.55; cursor: wait; }
+
+button { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-weight: 600; line-height: 1.5; cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
+.reset-button { color: var(--muted); background: var(--surface); }
+.reset-button:hover:not(:disabled) { border-color: var(--muted); background: var(--canvas); color: var(--ink); }
 button:disabled { opacity: 0.5; cursor: default; }
-:focus-visible { outline: 3px solid #005fcc; outline-offset: 3px; }
-.note, footer { font-size: 12px; color: #55585c; }
-footer { padding-top: 12px; border-top: 1px solid #ddd; }
+.retry-button { margin-top: 10px; color: #fff; border-color: var(--primary); background: var(--primary); }
+.reset-button[hidden] + .retry-button { margin-top: 0; }
+.retry-button:hover { border-color: var(--primary-hover); background: var(--primary-hover); }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+.privacy-line { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 16px 0 20px; font-size: 11px; color: var(--muted); }
+.privacy-line svg { flex: 0 0 auto; }
+.scope-note { padding: 0 2px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.scope-note p:first-child { margin-bottom: 3px; font-weight: 650; color: var(--ink); }
+footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+footer nav { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--muted); }
+footer a { color: var(--primary); font-weight: 600; text-decoration: none; text-underline-offset: 3px; }
+footer a:hover { text-decoration: underline; }
+footer p { margin-top: 10px; color: var(--muted); font-size: 10px; }
+
+body[data-state="on"] .state-badge { color: var(--active); background: var(--active-surface); }
+body[data-state="error"] .state-badge { color: var(--error); background: var(--error-surface); }
 
 @media (prefers-color-scheme: dark) {
-  :root { color: #f3f3f5; background: #202224; }
-  button { color: #f3f3f5; background: #34363a; border-color: #9b9da0; }
-  .note, footer { color: #c3c5c8; }
-  footer { border-color: #55585c; }
+  :root {
+    --canvas: #141a27;
+    --surface: #1c2535;
+    --ink: #f2f4fa;
+    --muted: #a8b3c7;
+    --border: #354157;
+    --primary: #a7b5ff;
+    --primary-hover: #bec8ff;
+    --active: #9ad9b2;
+    --active-surface: #213a30;
+    --neutral-surface: #2c374b;
+    --track: #66738a;
+    --error: #ffb2aa;
+    --error-surface: #452d31;
+  }
+  #never-reminders:checked { background: #5269db; border-color: #5269db; }
+  .retry-button { color: #172033; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::after { transition: none !important; }
+}
+
+@media (forced-colors: active) {
+  #never-reminders { appearance: auto; width: 22px; border: 0; background: none; }
+  #never-reminders::after { display: none; }
+  .state-badge { border: 1px solid CanvasText; }
 }
