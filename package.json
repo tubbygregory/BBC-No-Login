@@ -1,0 +1,15 @@
+{
+  "name": "bbc-no-login",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Chromium extension that remembers when you never want optional BBC sign-in reminders.",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.64.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

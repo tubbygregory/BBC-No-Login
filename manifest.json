@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "BBC No Login",
+  "version": "1.0.0",
+  "description": "Adds a remembered Never option to optional BBC sign-in reminders.",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "BBC No Login",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.bbc.co.uk/*", "*://*.bbc.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

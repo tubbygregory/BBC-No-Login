@@ -1,0 +1,59 @@
+name: Package extension release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to package (must match manifest.json)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          persist-credentials: false
+      - name: Validate and package runtime files
+        run: python3 scripts/package.py --tag "$RELEASE_TAG"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BBC-No-Login-${{ env.RELEASE_TAG }}
+          path: dist/*.zip
+          if-no-files-found: error
+      - name: Publish GitHub release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/release-notes.md" <<'NOTES'
+          ## Install in Chrome, Edge or Brave
+
+          1. Download the **BBC-No-Login** ZIP below and extract it to a folder you will keep.
+          2. Open your browser's extensions page and enable **Developer mode**.
+          3. Choose **Load unpacked**, then select the extracted folder containing `manifest.json`.
+          4. Reload BBC tabs and choose **Never** when an optional sign-in reminder appears.
+
+          This is an unpacked extension, so browser-store installation and automatic updates are not available. Update the files in the same folder and reload the extension to install a later version.
+
+          Optional reminders only. Required BBC account access, including iPlayer, still requires an account. This independent extension is not affiliated with the BBC.
+          NOTES
+          gh release create "$RELEASE_TAG" dist/*.zip \
+            --verify-tag \
+            --title "BBC No Login ${RELEASE_TAG#v}" \
+            --notes-file "$RUNNER_TEMP/release-notes.md"

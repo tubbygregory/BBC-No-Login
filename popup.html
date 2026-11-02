@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BBC No Login</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <img src="icons/icon48.png" width="40" height="40" alt="">
+      <h1>BBC No Login</h1>
+    </header>
+    <p>Your choice, remembered across BBC websites in this browser profile.</p>
+    <label class="preference">
+      <input id="never-reminders" type="checkbox" disabled>
+      <span>Never ask me to sign in</span>
+    </label>
+    <p id="status" role="status" aria-live="polite">Loading your preference…</p>
+    <button id="allow-reminders" type="button" disabled>Allow reminders again</button>
+    <p class="note">Optional reminders only. Services that require an account, such as iPlayer, still require one.</p>
+    <footer>Independent extension. Not affiliated with the BBC.</footer>
+  </body>
+</html>
